@@ -7,7 +7,7 @@ pub struct StopWord<'a> {
 }
 
 impl<'a> StopWord<'a> {
-    pub fn new(dictionary: &Dictionary) -> StopWord {
+    pub fn new(dictionary: &Dictionary) -> StopWord<'_> {
         let tokenizer = Tokenizer::new();
         StopWord{
             dictionary: dictionary,

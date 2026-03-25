@@ -9,7 +9,7 @@ pub struct Stemmer<'a> {
 }
 
 impl<'a> Stemmer<'a> {
-    pub fn new(dictionary: &Dictionary) -> Stemmer {
+    pub fn new(dictionary: &Dictionary) -> Stemmer<'_> {
         let tokenizer = Tokenizer::new();
         let affixation = Affixation::new(dictionary);
         Stemmer{

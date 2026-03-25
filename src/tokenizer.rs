@@ -1,6 +1,4 @@
 extern crate regex;
-extern crate snailquote;
-extern crate htmlescape;
 
 pub struct Tokenizer {
     properties : Vec<RegexProperties>,
@@ -26,10 +24,7 @@ impl Tokenizer {
     }
 
     pub fn tokenize(&self, sentence: &str) -> Vec<String> {
-        let mut _cleaned_sentence : String;
-        _cleaned_sentence = sentence.to_lowercase();
-        _cleaned_sentence = snailquote::unescape(sentence).unwrap();
-        _cleaned_sentence = htmlescape::decode_html(&_cleaned_sentence).unwrap();        
+        let mut _cleaned_sentence = sentence.to_lowercase();
     
         for regex_property in &self.properties {
             _cleaned_sentence = regex_property.str_regex.replace_all(&_cleaned_sentence, regex_property.str_replacement).to_string();

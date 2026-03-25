@@ -19,7 +19,7 @@ pub struct Affixation<'a> {
 }
 
 impl<'a> Affixation<'a> {
-    pub fn new(dict: &Dictionary) -> Affixation {
+    pub fn new(dict: &Dictionary) -> Affixation<'_> {
         Affixation{
             dictionary: dict,
             prefix_first: regex::Regex::new(r"^(be.+lah|be.+an|me.+i|di.+i|pe.+i|ter.+i)$").unwrap(),
