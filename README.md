@@ -10,21 +10,21 @@ A fully modernized Rust 2024 implementation of the **Nazief-Adriani / Enhanced C
 
 ---
 
-## ✨ What's New (vs. original rust-sastrawi)
+## What's New (vs. original rust-sastrawi)
 
-| Feature | Old | New |
-|---|---|---|
-| **Engine** | Regex-based rules | Zero-regex manual string slicing |
-| **Dictionary** | HashMap on every call | FST (Finite State Transducer) with `OnceLock` |
-| **Allocation** | Heap strings everywhere | `Cow<'a, str>` zero-copy API |
-| **Prefix rules** | Basic me-/ber- | Full Nazief-Adriani: me-, pe-, ber-, ter-, se-, di-, ke-, ku-, kau- |
-| **`menge-`/`penge-`** | ❌ | ✅ Monosyllabic base words (mengebom→bom) |
-| **`nge-`** | ❌ | ✅ Informal/colloquial prefix (ngecat→cat) |
-| **Confix** | ❌ | ✅ ke-an, per-an, ber-an, se-nya simultaneous strip |
-| **Loanword suffixes** | ❌ | ✅ -isme, -isasi, -isir, -is |
-| **Hyphenated clitics** | ❌ | ✅ kuasa-Mu, allah-lah, nikmat-Ku |
-| **Backtracking** | Partial | Full Longest-Root / Conservative Stemming |
-| **Edition** | Rust 2018 | **Rust 2024** |
+| Feature                | Old                     | New                                                                 |
+| ---------------------- | ----------------------- | ------------------------------------------------------------------- |
+| **Engine**             | Regex-based rules       | Zero-regex manual string slicing                                    |
+| **Dictionary**         | HashMap on every call   | FST (Finite State Transducer) with `OnceLock`                       |
+| **Allocation**         | Heap strings everywhere | `Cow<'a, str>` zero-copy API                                        |
+| **Prefix rules**       | Basic me-/ber-          | Full Nazief-Adriani: me-, pe-, ber-, ter-, se-, di-, ke-, ku-, kau- |
+| **`menge-`/`penge-`**  | ❌                      | ✅ Monosyllabic base words (mengebom→bom)                           |
+| **`nge-`**             | ❌                      | ✅ Informal/colloquial prefix (ngecat→cat)                          |
+| **Confix**             | ❌                      | ✅ ke-an, per-an, ber-an, se-nya simultaneous strip                 |
+| **Loanword suffixes**  | ❌                      | ✅ -isme, -isasi, -isir, -is                                        |
+| **Hyphenated clitics** | ❌                      | ✅ kuasa-Mu, allah-lah, nikmat-Ku                                   |
+| **Backtracking**       | Partial                 | Full Longest-Root / Conservative Stemming                           |
+| **Edition**            | Rust 2018               | **Rust 2024**                                                       |
 
 ---
 
@@ -132,7 +132,9 @@ We prefer `sekolah` — fewer morphemes removed = better fidelity.
 Based on recent Indonesian NLP research (ECS, IndoMorph, Aksara), we added:
 
 ### A. `nge-` Informal Prefix
+
 Colloquial/lisan prefix, mirror of `menge-`. Common in Jakarta informal speech and social media.
+
 ```
 ngecat     → cat
 ngegas     → gas
@@ -141,7 +143,9 @@ ngelamar   → lamar
 ```
 
 ### B. Confixes (ECS — Enhanced Confix Stripping)
+
 Simultaneous prefix+suffix removal, proven to outperform plain Nazief-Adriani.
+
 ```
 keamanan    → aman     (ke- + -an)
 pertanian   → tani     (per- + -an)
@@ -149,12 +153,14 @@ berhadapan  → hadap    (ber- + -an)
 ```
 
 ### C. Superlative `se-nya` Particle
+
 ```
 selengkapnya  → lengkap
 seberhasilnya → berhasil → hasil
 ```
 
 ### D. Loanword Suffixes
+
 ```
 idealisasi  → ideal   (-isasi)
 legalisir   → legal   (-isir)
@@ -168,11 +174,11 @@ idealis     → ideal   (-is)   [already in original]
 
 The zero-regex FST engine is significantly faster than the legacy implementation:
 
-| Operation | Old (regex) | New (zero-regex FST) |
-|---|---|---|
-| Dictionary lookup | O(n) HashMap | O(k) FST where k=key length |
-| Prefix stripping | Regex compile + match | Direct string slice comparison |
-| Memory | Regex DFA state machines | Minimal — FST bytes + OnceLock |
+| Operation         | Old (regex)              | New (zero-regex FST)           |
+| ----------------- | ------------------------ | ------------------------------ |
+| Dictionary lookup | O(n) HashMap             | O(k) FST where k=key length    |
+| Prefix stripping  | Regex compile + match    | Direct string slice comparison |
+| Memory            | Regex DFA state machines | Minimal — FST bytes + OnceLock |
 
 ---
 
@@ -187,8 +193,8 @@ cargo test --release
 
 ## 📚 References & Credits
 
-- **Algorithm**: Nazief & Adriani (1996, 2007) — *"Confix Stripping: Approach to Stemming Algorithm for Bahasa Indonesia"*
-- **ECS**: A. Larasati et al. — *Enhanced Confix Stripping Stemmer*
+- **Algorithm**: Nazief & Adriani (1996, 2007) — _"Confix Stripping: Approach to Stemming Algorithm for Bahasa Indonesia"_
+- **ECS**: A. Larasati et al. — _Enhanced Confix Stripping Stemmer_
 - **PHP Sastrawi**: [Andy Librian](https://github.com/andylibrian) — original PHP implementation
 - **rust-sastrawi**: [iDevoid](https://github.com/iDevoid/rust-sastrawi) — original Rust port (2019)
 - **sastrawi-rs**: [ibahasa Team](https://github.com/ibahasa/sastrawi-rs) — this modernized fork (2026)
