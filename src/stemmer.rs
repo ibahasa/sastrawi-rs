@@ -3,6 +3,21 @@ use crate::tokenizer::Tokenizer;
 use crate::affixation::Affixation;
 use std::borrow::Cow;
 
+/// The main Indonesian word stemmer.
+///
+/// It follows the Nazief-Adriani algorithm, enhanced with ECS and modern
+/// morphological extensions.
+///
+/// # Example
+/// ```
+/// use sastrawi::{Dictionary, Stemmer};
+///
+/// let dict = Dictionary::new();
+/// let stemmer = Stemmer::new(&dict);
+///
+/// let word = "Perekonomian";
+/// assert_eq!(stemmer.stem_word(word), "ekonomi");
+/// ```
 pub struct Stemmer<'a> {
     dictionary: &'a Dictionary,
     stopwords: Dictionary,
@@ -11,6 +26,18 @@ pub struct Stemmer<'a> {
 }
 
 impl<'a> Stemmer<'a> {
+    /// Creates a new `Stemmer` instance using the provided root dictionary.
+    ///
+    /// The dictionary must be loaded beforehand using `Dictionary::new()` or
+    /// `Dictionary::custom()`.
+    ///
+    /// # Example
+    /// ```
+    /// use sastrawi::{Dictionary, Stemmer};
+    ///
+    /// let dict = Dictionary::new();
+    /// let stemmer = Stemmer::new(&dict);
+    /// ```
     pub fn new(dictionary: &Dictionary) -> Stemmer<'_> {
         let tokenizer = Tokenizer::new();
         let affixation = Affixation::new(dictionary);
@@ -22,20 +49,42 @@ impl<'a> Stemmer<'a> {
         }
     }
 
-    /// Stem all tokens in a sentence. Stopwords are included in the output.
+    /// Stems all tokens in a sentence, returning them as an iterator.
+    ///
+    /// Words are processed using `stem_word`. Stopwords are NOT filtered
+    /// in this method. Use `stem_sentence_filtered` to skip them.
+    ///
+    /// # Example
+    /// ```
+    /// use sastrawi::{Dictionary, Stemmer};
+    ///
+    /// let dict = Dictionary::new();
+    /// let stemmer = Stemmer::new(&dict);
+    ///
+    /// let sentence = "Dia sedang makan nasi";
+    /// let stemmed: Vec<_> = stemmer.stem_sentence(sentence).collect();
+    /// // → ["dia", "sedang", "makan", "nasi"]
+    /// ```
     pub fn stem_sentence<'b>(&'b self, sentence: &'b str) -> impl Iterator<Item = Cow<'b, str>> + 'b {
         self.tokenizer.tokenize(sentence).map(move |word| self.stem_word(word))
     }
 
-    /// Stem all tokens in a sentence, **skipping stopwords** (yang, di, dengan, …).
-    /// Useful for search indexing and NLP analysis where common function words add noise.
+    /// Stems all tokens in a sentence, skipping common Indonesian stopwords.
+    ///
+    /// Stopwords like "yang", "di", "dari" are removed automatically.
+    /// This is highly recommended for building search indexes or running
+    /// NLP analysis.
     ///
     /// # Example
     /// ```
-    /// let dict = sastrawi::Dictionary::new();
-    /// let stemmer = sastrawi::Stemmer::new(&dict);
-    /// let tokens: Vec<_> = stemmer.stem_sentence_filtered("Perekonomian sedang dalam pertumbuhan").collect();
-    /// // → ["ekonomi", "tumbuh"]  — "sedang" and "dalam" are filtered out
+    /// use sastrawi::{Dictionary, Stemmer};
+    ///
+    /// let dict = Dictionary::new();
+    /// let stemmer = Stemmer::new(&dict);
+    ///
+    /// let sentence = "Pertumbuhan yang membanggakan";
+    /// let filtered: Vec<_> = stemmer.stem_sentence_filtered(sentence).collect();
+    /// // → ["tumbuh", "bangga"]  — "yang" is skipped
     /// ```
     pub fn stem_sentence_filtered<'b>(&'b self, sentence: &'b str) -> impl Iterator<Item = Cow<'b, str>> + 'b {
         self.tokenizer
@@ -44,21 +93,56 @@ impl<'a> Stemmer<'a> {
             .map(move |word| self.stem_word(word))
     }
 
-    /// Check whether a word is a stopword.
+    /// Checks whether a specific word is considered a stopword.
+    ///
+    /// It uses the default Indonesian stopword list.
+    ///
+    /// # Example
+    /// ```
+    /// use sastrawi::{Dictionary, Stemmer};
+    ///
+    /// let dict = Dictionary::new();
+    /// let stemmer = Stemmer::new(&dict);
+    ///
+    /// assert!(stemmer.is_stopword("yang"));
+    /// assert!(!stemmer.is_stopword("ekonomi"));
+    /// ```
     pub fn is_stopword(&self, word: &str) -> bool {
         self.stopwords.find(word)
     }
 
+    /// Stems a single Indonesian word.
+    ///
+    /// It returns a `Cow<'b, str>`. If the word was not modified, it will
+    /// point to the original borrowed slice (zero-copy), otherwise any
+    /// changes are owned and returned as a new `String`.
+    ///
+    /// # Morphological Handling
+    ///
+    /// 1.  **Hyphenated clitics**: `kuasa-Mu` → `kuasa`
+    /// 2.  **Particles**: `-lah`, `-kah`, `-pun`
+    /// 3.  **Possessives**: `-ku`, `-mu`, `-nya`
+    /// 4.  **Prefixes/Suffixes**: full Nazief-Adriani + ECS extensions.
+    /// 5.  **Backtracking**: ensures the longest valid root is found.
+    ///
+    /// # Example
+    /// ```
+    /// use sastrawi::{Dictionary, Stemmer};
+    ///
+    /// let dict = Dictionary::new();
+    /// let stemmer = Stemmer::new(&dict);
+    ///
+    /// assert_eq!(stemmer.stem_word("membangunkan"), "bangun");
+    /// assert_eq!(stemmer.stem_word("pertanian"), "tani");
+    /// ```
     pub fn stem_word<'b>(&self, word: &'b str) -> Cow<'b, str> {
         // Handle hyphenated clitics: kuasa-Mu → stem("kuasa"), allah-lah → stem("allah")
-        // Strip everything from the hyphen onward before processing
         let base = if let Some(idx) = word.find('-') {
             &word[..idx]
         } else {
             word
         };
 
-        // Always normalize to lowercase first
         let original_word = base.to_lowercase();
 
         if self.dictionary.find(&original_word) {
@@ -69,29 +153,21 @@ impl<'a> Stemmer<'a> {
             return Cow::Owned(original_word);
         }
 
-        // We work with owned Strings from here so no borrow issues
         let mut current = original_word.clone();
         let mut particle = String::new();
         let mut possessive = String::new();
         let mut suffix = String::new();
 
         // --- Step 1: Remove Particle ---
-        // Call in block to isolate borrow
         let pres = {
             let (p, r) = self.affixation.remove_particle(&current);
             if p.is_empty() { None } else { Some((p.into_owned(), r.into_owned())) }
         };
         if let Some((p, after)) = pres {
             particle = p;
-            // Only accept if: (a) bare word is in dict AND (b) it's at least 3 chars
-            // This prevents false positives like "seko" from "bersekolah-lah"→"berseko"
-            // The real check: don't short-circuit if the bare word is suspiciously short
-            // and the FULL word (without particle only) is also a valid base after prefix stripping.
-            // Simple heuristic: accept if found in dict and len >= 4.
             if self.dictionary.find(&after) && after.len() >= 4 {
                 return Cow::Owned(after);
             }
-            // Continue Nazief-Adriani with particle removed
             current = after;
         }
 
@@ -116,9 +192,6 @@ impl<'a> Stemmer<'a> {
         if let Some((s, after_suffix)) = sufres {
             suffix = s;
             if self.dictionary.find(&after_suffix) {
-                // Guard against over-stemming: if prefix-only on original ALSO succeeds,
-                // the original path is the true root (fewer morphemes removed).
-                // e.g. petani → suffix-i → petan (in dict), but petani → pe- → tani is better.
                 let (fo, ro) = self.affixation.remove_prefixes(&original_word);
                 if fo {
                     return Cow::Owned(ro);
@@ -127,34 +200,25 @@ impl<'a> Stemmer<'a> {
             }
             let (found, res) = self.affixation.remove_prefixes(&after_suffix);
             if found {
-                // Longest Root check: prefer prefix-only on original if it yields longer root
                 let (found_orig, res_orig) = self.affixation.remove_prefixes(&original_word);
                 if found_orig && res_orig.len() > res.len() {
                     return Cow::Owned(res_orig);
                 }
                 return Cow::Owned(res);
             }
-            // Suffix didn't help — keep suffix captured for final backtrack
         }
 
-        // --- Step 4.5: ECS Confix — simultaneous prefix+suffix strip ---
-        // Handles ke-an, per-an, ber-an, me-kan, pe-an, ter-kan, se-nya.
-        // Based on Enhanced Confix Stripping research (outperforms plain Nazief-Adriani).
+        // --- Step 4.5: ECS Confix ---
         if let Some(root) = self.affixation.remove_confix(&original_word) {
             return Cow::Owned(root);
         }
 
-        // --- Step 5: Prefix-only removal ---
-        // Best practice (Longest Root / Conservative Stemming):
-        // Try prefix stripping on ORIGINAL word first. If it yields a valid root,
-        // prefer it over stripping from a particle-modified `current`. This prevents
-        // over-stemming like bersekolah→berseko(-lah)→seko instead of bersekolah→sekolah.
+        // --- Step 5: Prefix-only removal (Longest-root fallback) ---
         let (found_original, res_original) = self.affixation.remove_prefixes(&original_word);
         if found_original {
             return Cow::Owned(res_original);
         }
 
-        // Fallback: try prefix stripping on current (particle/possessive may have been removed)
         if current != original_word {
             let (prefix_found, res5) = self.affixation.remove_prefixes(&current);
             if prefix_found {

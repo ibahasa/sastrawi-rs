@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 pub use dictionary::Dictionary;
 pub use stemmer::Stemmer;
 pub use stopword::StopWord;

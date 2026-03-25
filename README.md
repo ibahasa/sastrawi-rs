@@ -39,12 +39,12 @@ Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-sastrawi-rs = "0.3"
+sastrawi-rs = "0.3.1"
 ```
 
 ### Stem a Sentence
 
-```rust
+```rust,ignore
 use sastrawi::{Dictionary, Stemmer};
 
 fn main() {
@@ -60,7 +60,7 @@ fn main() {
 
 ### Stem a Single Word
 
-```rust
+```rust,ignore
 use sastrawi::{Dictionary, Stemmer};
 
 let dict = Dictionary::new();
@@ -81,7 +81,7 @@ assert_eq!(stemmer.stem_word("kuasa-Mu").as_ref(), "kuasa");      // hyphen clit
 Common function words (_yang, di, dari, dalam, dengan, …_) carry no semantic value for
 indexing or NLP analysis. `stem_sentence_filtered` removes them automatically:
 
-```rust
+```rust,ignore
 use sastrawi::{Dictionary, Stemmer};
 
 let dict = Dictionary::new();
@@ -104,7 +104,7 @@ assert!(!stemmer.is_stopword("ekonomi")); // false
 
 ### Custom Dictionary
 
-```rust
+```rust,ignore
 use sastrawi::{Dictionary, Stemmer};
 
 let words = &["aman", "tani", "bangun", "bom"];
@@ -118,7 +118,7 @@ assert_eq!(stemmer.stem_word("keamanan").as_ref(), "aman");
 
 ## 📦 API Reference
 
-```rust
+```rust,ignore
 // Initialization
 let dict = Dictionary::new();                   // bundled dictionary (~26k words)
 let dict = Dictionary::custom(&["word", ...]); // custom word list
@@ -137,7 +137,7 @@ stemmer.is_stopword(word)             // → bool
 
 ## 🏗 Architecture
 
-```
+```text
 sastrawi-rs/
 ├── src/
 │   ├── lib.rs           # Public API re-exports
@@ -156,7 +156,7 @@ sastrawi-rs/
 
 ### Stemming Pipeline (Nazief-Adriani + ECS)
 
-```
+```text
 Input word
   │
   ├─ 0. Lowercase + hyphen-clitic strip  (kuasa-Mu → kuasa)
@@ -173,7 +173,7 @@ Input word
 
 When multiple valid roots exist, we always prefer the **longest** (least-stemmed) result.
 
-```
+```text
 bersekolah → sekolah  ✓  (not seko — fewer morphemes removed = better fidelity)
 ```
 
@@ -186,7 +186,7 @@ Based on recent Indonesian NLP research (ECS [¹], IndoMorph [²], Aksara v1.5 [
 ### A. `nge-` Informal Prefix
 Colloquial prefix, mirror of `menge-`. Common in Jakarta informal speech and social media (e.g. MPStemmer [⁴]).
 
-```
+```text
 ngecat    → cat
 ngegas    → gas
 ngelamar  → lamar
@@ -196,20 +196,20 @@ ngelepas  → lepas
 ### B. Confixes — ECS (Enhanced Confix Stripping)
 Simultaneous prefix+suffix removal, proven to outperform plain Nazief-Adriani in accuracy [¹].
 
-```
+```text
 keamanan    → aman    (ke-…-an)
 pertanian   → tani    (per-…-an)
 berhadapan  → hadap   (ber-…-an)
 ```
 
 ### C. Superlative `se-nya` Particle
-```
+```text
 selengkapnya  → lengkap
 seberhasilnya → hasil
 ```
 
 ### D. Loanword Suffixes
-```
+```text
 idealisasi → ideal   (-isasi)
 legalisir  → legal   (-isir)
 idealisme  → ideal   (-isme)
