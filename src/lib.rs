@@ -7,5 +7,5 @@ mod dictionary;
 mod stemmer;
 mod tokenizer;
 mod affixation;
-mod affixation_regex;
 mod stopword;
+mod affix_rules;

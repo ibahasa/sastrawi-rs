@@ -15,16 +15,16 @@ impl<'a> StopWord<'a> {
         }
     }
 
-    pub fn stop_word(&self, sentence: &mut String) {
+    pub fn stop_word(&self, sentence: &str) -> String {
         let words = self.tokenizer.tokenize(sentence);
         let mut results: Vec<String> = Vec::new();
 
-        for word in words.iter() {
+        for word in words {
             if !self.dictionary.find(word) {
-                results.push(word.clone());
+                results.push(word.to_string());
             }
         }
 
-        *sentence = results.join(" ");
+        results.join(" ")
     }
 }
