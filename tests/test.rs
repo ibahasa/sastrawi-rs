@@ -211,3 +211,103 @@ fn test_stem_sentence() {
         assert_eq!(actual.as_ref(), expected[index]);
     }
 }
+
+// ---------------------------------------------------------------------------
+// Test: nge- Informal Prefix (2020-2026 research — MPStemmer, Aksara v1.2+)
+// Colloquial/lisan form common in social media, Jakarta speech, ibahasa slang corpus
+// ---------------------------------------------------------------------------
+#[test]
+fn test_nge_informal_prefix() {
+    let words = &[
+        "cat", "gas", "bom", "lap", "pel", "lamar", "rasa", "lepas", "charge",
+    ];
+    let dict = Dictionary::custom(words);
+    let stemmer = Stemmer::new(&dict);
+
+    let cases = &[
+        ("ngecat", "cat"),
+        ("ngegas", "gas"),
+        ("ngebom", "bom"),
+        ("ngelap", "lap"),
+        ("ngepel", "pel"),
+        ("ngelamar", "lamar"),
+        ("ngelepas", "lepas"),
+    ];
+
+    for (value, expected) in cases.iter() {
+        let actual = stemmer.stem_word(value);
+        assert_eq!(actual.as_ref(), *expected, "nge- failed for: {}", value);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Test: ECS Confixes — ke-an, per-an, ber-an simultaneous strip
+// Based on Enhanced Confix Stripping (outperforms plain Nazief-Adriani per 2025 research)
+// ---------------------------------------------------------------------------
+#[test]
+fn test_ecs_confixes() {
+    let words = &[
+        "aman", "tani", "hadap", "sakit", "tumbuh", "indah", "cantik",
+        "sejahtera", "maju", "daerah",
+    ];
+    let dict = Dictionary::custom(words);
+    let stemmer = Stemmer::new(&dict);
+
+    let cases = &[
+        // ke-an confix
+        ("keamanan", "aman"),
+        ("kesakitan", "sakit"),
+        ("keindahan", "indah"),
+        ("kecantikan", "cantik"),
+        // per-an confix
+        ("pertanian", "tani"),
+        ("kemajuan", "maju"),
+        ("kesejahteraan", "sejahtera"),
+        // ber-an confix
+        ("berhadapan", "hadap"),
+    ];
+
+    for (value, expected) in cases.iter() {
+        let actual = stemmer.stem_word(value);
+        assert_eq!(actual.as_ref(), *expected, "ECS confix failed for: {}", value);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Test: Loanword Suffixes (-isasi, -isir, -isme, -is)
+// Common in modern formal Indonesian from 2000-onwards, especially technical/academic text
+// ---------------------------------------------------------------------------
+#[test]
+fn test_loanword_suffixes() {
+    let words = &[
+        "ideal", "final", "legal", "normal", "formal", "digital", "kapital",
+        "modern", "liberal", "sosial",
+    ];
+    let dict = Dictionary::custom(words);
+    let stemmer = Stemmer::new(&dict);
+
+    let cases = &[
+        // -isasi
+        ("idealisasi", "ideal"),
+        ("finalisasi", "final"),
+        ("digitalisasi", "digital"),
+        ("normalisasi", "normal"),
+        ("modernisasi", "modern"),
+        // -isir
+        ("legalisir", "legal"),
+        ("formalisir", "formal"),
+        // -isme
+        ("idealisme", "ideal"),
+        ("liberalisme", "liberal"),
+        ("kapitalisme", "kapital"),
+        // -is
+        ("idealis", "ideal"),
+        ("sosialis", "sosial"),
+        ("formalis", "formal"),
+    ];
+
+    for (value, expected) in cases.iter() {
+        let actual = stemmer.stem_word(value);
+        assert_eq!(actual.as_ref(), *expected, "loanword suffix failed for: {}", value);
+    }
+}

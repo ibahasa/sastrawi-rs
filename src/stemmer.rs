@@ -112,6 +112,13 @@ impl<'a> Stemmer<'a> {
             // Suffix didn't help — keep suffix captured for final backtrack
         }
 
+        // --- Step 4.5: ECS Confix — simultaneous prefix+suffix strip ---
+        // Handles ke-an, per-an, ber-an, me-kan, pe-an, ter-kan, se-nya.
+        // Based on Enhanced Confix Stripping research (outperforms plain Nazief-Adriani).
+        if let Some(root) = self.affixation.remove_confix(&original_word) {
+            return Cow::Owned(root);
+        }
+
         // --- Step 5: Prefix-only removal ---
         // Best practice (Longest Root / Conservative Stemming):
         // Try prefix stripping on ORIGINAL word first. If it yields a valid root,
