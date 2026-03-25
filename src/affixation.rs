@@ -118,8 +118,16 @@ impl<'a> Affixation<'a> {
                 result_word = res.0;
                 recoding = res.1;
             },
-            // "te" rules and "infix" rules to be completed in Part 2
-            _ => {}
+            "te" => {
+                let res = affix_rules::remove_prefix_te(word);
+                result_word = res.0;
+                recoding = res.1;
+            },
+            _ => {
+                let res = affix_rules::remove_infix(word);
+                result_word = res.0;
+                recoding = res.1;
+            }
         }
 
         (prefix, result_word.into_owned(), recoding)
