@@ -181,11 +181,10 @@ bersekolah → sekolah  ✓  (not seko — fewer morphemes removed = better fide
 
 ## 🆕 Extensions (2020–2026 Research)
 
-Based on recent Indonesian NLP research (ECS, IndoMorph, Aksara v1.5), we added:
+Based on recent Indonesian NLP research (ECS [¹], IndoMorph [²], Aksara v1.5 [³]), we added these modern morphological patterns:
 
 ### A. `nge-` Informal Prefix
-
-Colloquial prefix, mirror of `menge-`. Common in Jakarta informal speech and social media.
+Colloquial prefix, mirror of `menge-`. Common in Jakarta informal speech and social media (e.g. MPStemmer [⁴]).
 
 ```
 ngecat    → cat
@@ -195,8 +194,7 @@ ngelepas  → lepas
 ```
 
 ### B. Confixes — ECS (Enhanced Confix Stripping)
-
-Simultaneous prefix+suffix removal, proven to outperform plain Nazief-Adriani in accuracy.
+Simultaneous prefix+suffix removal, proven to outperform plain Nazief-Adriani in accuracy [¹].
 
 ```
 keamanan    → aman    (ke-…-an)
@@ -205,14 +203,12 @@ berhadapan  → hadap   (ber-…-an)
 ```
 
 ### C. Superlative `se-nya` Particle
-
 ```
 selengkapnya  → lengkap
 seberhasilnya → hasil
 ```
 
 ### D. Loanword Suffixes
-
 ```
 idealisasi → ideal   (-isasi)
 legalisir  → legal   (-isir)
@@ -252,13 +248,15 @@ cargo test --release
 
 ## 📚 References & Credits
 
+- [¹] **ECS**: Arifin, A., Mahendra, P., & Ciptaningtyas, H. T. (2009). _Enhanced Confix Stripping Stemmer and Ants Algorithm for Classifying News Document in Indonesian Language_.
+- [²] **IndoMorph**: Kamajaya, I., & Moeljadi, D. (2025). _IndoMorph: a Morphology Engine for Indonesian_. [ACL Anthology](https://aclanthology.org/2025.sealp-1.7/).
+- [³] **Aksara**: Universitas Indonesia (2023). _Aksara v1.5: Indonesian NLP tool conforming to UD v2 guidelines_. [GitHub](https://github.com/ir-nlp-csui/aksara).
+- [⁴] **MPStemmer**: Prabono, A. G. (2020). _Mpstemmer: a multi-phase stemmer for standard and nonstandard Indonesian words_. [GitHub](https://github.com/ariaghora/mpstemmer).
 - **Algorithm**: Nazief & Adriani (1996, 2007) — _"Confix Stripping: Approach to Stemming Algorithm for Bahasa Indonesia"_
-- **ECS**: A. Larasati et al. — _Enhanced Confix Stripping Stemmer_
 - **PHP Sastrawi**: [Andy Librian](https://github.com/andylibrian) — original PHP implementation
 - **rust-sastrawi**: [iDevoid](https://github.com/iDevoid/rust-sastrawi) — original Rust port (2019)
 - **sastrawi-rs**: [ibahasa Team](https://github.com/ibahasa/sastrawi-rs) — this modernized fork (2026)
 - **Dictionary**: [Kateglo](http://kateglo.com/) by Ivan Lanin (CC-BY-NC-SA 3.0)
-- **Research consulted**: IndoMorph (ACL 2025), Aksara v1.5 (UI-NLP, 2023), MPStemmer (2020)
 
 ---
 
