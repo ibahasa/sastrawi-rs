@@ -4,9 +4,13 @@
 
 [![Rust 2024](https://img.shields.io/badge/Rust-2024%20Edition-orange)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![crates.io](https://img.shields.io/badge/crates.io-sastrawi-blue)](https://crates.io/crates/sastrawi)
+[![crates.io](https://img.shields.io/crates/v/sastrawi-rs)](https://crates.io/crates/sastrawi-rs)
+[![docs.rs](https://img.shields.io/docsrs/sastrawi-rs)](https://docs.rs/sastrawi-rs)
+[![Downloads](https://img.shields.io/crates/d/sastrawi-rs)](https://crates.io/crates/sastrawi-rs)
 
 A fully modernized Rust 2024 implementation of the **Nazief-Adriani / Enhanced Confix Stripping (ECS)** stemmer for Bahasa Indonesia. Fork of [iDevoid/rust-sastrawi](https://github.com/iDevoid/rust-sastrawi), itself a Rust port of [PHP Sastrawi](https://github.com/sastrawi/sastrawi) by **Andy Librian**.
+
+> **Note:** The crate is published as `sastrawi-rs` on crates.io but imported as `sastrawi` in Rust code (hyphens become underscores per Rust convention).
 
 ---
 
@@ -23,6 +27,7 @@ A fully modernized Rust 2024 implementation of the **Nazief-Adriani / Enhanced C
 | **Confix**             | ❌                      | ✅ ke-an, per-an, ber-an, se-nya simultaneous strip                 |
 | **Loanword suffixes**  | ❌                      | ✅ -isme, -isasi, -isir, -is                                        |
 | **Hyphenated clitics** | ❌                      | ✅ kuasa-Mu, allah-lah, nikmat-Ku                                   |
+| **Stopword filter**    | ❌                      | ✅ `stem_sentence_filtered` + `is_stopword`                         |
 | **Backtracking**       | Partial                 | Full Longest-Root / Conservative Stemming                           |
 | **Edition**            | Rust 2018               | **Rust 2024**                                                       |
 
@@ -34,7 +39,7 @@ Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-sastrawi = { git = "https://github.com/ibahasa/sastrawi-rs" }
+sastrawi-rs = "0.3"
 ```
 
 ### Stem a Sentence
@@ -43,7 +48,7 @@ sastrawi = { git = "https://github.com/ibahasa/sastrawi-rs" }
 use sastrawi::{Dictionary, Stemmer};
 
 fn main() {
-    let dict = Dictionary::new(); // loads FST dictionary
+    let dict = Dictionary::new();
     let stemmer = Stemmer::new(&dict);
 
     let sentence = "Perekonomian Indonesia sedang dalam pertumbuhan yang membanggakan";
@@ -63,12 +68,38 @@ let stemmer = Stemmer::new(&dict);
 
 assert_eq!(stemmer.stem_word("membangunkan").as_ref(), "bangun");
 assert_eq!(stemmer.stem_word("keberuntunganmu").as_ref(), "untung");
-assert_eq!(stemmer.stem_word("mengebom").as_ref(), "bom");      // menge-
-assert_eq!(stemmer.stem_word("ngecat").as_ref(), "cat");         // nge- informal
-assert_eq!(stemmer.stem_word("keamanan").as_ref(), "aman");      // ke-an confix
-assert_eq!(stemmer.stem_word("pertanian").as_ref(), "tani");     // per-an confix
-assert_eq!(stemmer.stem_word("idealisasi").as_ref(), "ideal");   // -isasi loanword
-assert_eq!(stemmer.stem_word("kuasa-Mu").as_ref(), "kuasa");     // hyphen clitic
+assert_eq!(stemmer.stem_word("mengebom").as_ref(), "bom");       // menge-
+assert_eq!(stemmer.stem_word("ngecat").as_ref(), "cat");          // nge- informal
+assert_eq!(stemmer.stem_word("keamanan").as_ref(), "aman");       // ke-an confix
+assert_eq!(stemmer.stem_word("pertanian").as_ref(), "tani");      // per-an confix
+assert_eq!(stemmer.stem_word("idealisasi").as_ref(), "ideal");    // -isasi loanword
+assert_eq!(stemmer.stem_word("kuasa-Mu").as_ref(), "kuasa");      // hyphen clitic
+```
+
+### Stopword Filtering
+
+Common function words (_yang, di, dari, dalam, dengan, …_) carry no semantic value for
+indexing or NLP analysis. `stem_sentence_filtered` removes them automatically:
+
+```rust
+use sastrawi::{Dictionary, Stemmer};
+
+let dict = Dictionary::new();
+let stemmer = Stemmer::new(&dict);
+
+let sentence = "Perekonomian Indonesia sedang dalam pertumbuhan yang membanggakan";
+
+// Without filter — all tokens included
+let all: Vec<_> = stemmer.stem_sentence(sentence).collect();
+// ["ekonomi", "indonesia", "sedang", "dalam", "tumbuh", "yang", "bangga"]
+
+// With stopword filter — function words removed
+let filtered: Vec<_> = stemmer.stem_sentence_filtered(sentence).collect();
+// ["ekonomi", "indonesia", "tumbuh", "bangga"]
+
+// Check individual words
+assert!(stemmer.is_stopword("yang"));     // true
+assert!(!stemmer.is_stopword("ekonomi")); // false
 ```
 
 ### Custom Dictionary
@@ -85,23 +116,42 @@ assert_eq!(stemmer.stem_word("keamanan").as_ref(), "aman");
 
 ---
 
+## 📦 API Reference
+
+```rust
+// Initialization
+let dict = Dictionary::new();                   // bundled dictionary (~26k words)
+let dict = Dictionary::custom(&["word", ...]); // custom word list
+let stemmer = Stemmer::new(&dict);
+
+// Stemming
+stemmer.stem_word(word)               // → Cow<'_, str>  (zero-copy when unchanged)
+stemmer.stem_sentence(sentence)       // → impl Iterator<Item = Cow<str>>
+stemmer.stem_sentence_filtered(sent)  // → Iterator with stopwords removed
+
+// Utilities
+stemmer.is_stopword(word)             // → bool
+```
+
+---
+
 ## 🏗 Architecture
 
 ```
 sastrawi-rs/
 ├── src/
 │   ├── lib.rs           # Public API re-exports
-│   ├── stemmer.rs       # Main engine: Nazief-Adriani 5-step pipeline + backtracking
-│   ├── affixation.rs    # Prefix/suffix/confix orchestration + pengembalian_akhir
-│   ├── affix_rules.rs   # Zero-regex morphological rules (all prefix/suffix patterns)
+│   ├── stemmer.rs       # Main engine: Nazief-Adriani pipeline + backtracking
+│   ├── affixation.rs    # Prefix/suffix/confix orchestration
+│   ├── affix_rules.rs   # Zero-regex morphological rules
 │   ├── dictionary.rs    # FST-based dictionary with OnceLock lazy init
 │   ├── tokenizer.rs     # Zero-copy &str tokenizer
 │   └── stopword.rs      # FST stopword filter
 ├── data/
 │   ├── words.txt        # ~26k root words (Kateglo, CC-BY-NC-SA 3.0)
 │   └── stopwords.txt    # Common Indonesian stopwords
-├── build.rs             # Compiles words.txt → dictionary.fst at build time
-└── tests/test.rs        # 170+ integration test cases
+├── build.rs             # Compiles word lists → FST at build time
+└── tests/test.rs        # 200+ integration test cases across 6 suites
 ```
 
 ### Stemming Pipeline (Nazief-Adriani + ECS)
@@ -109,76 +159,76 @@ sastrawi-rs/
 ```
 Input word
   │
-  ├─ 0. Lowercase + hyphen-clitic strip (kuasa-Mu → kuasa)
-  ├─ 1. Dictionary lookup  → return if found
-  ├─ 2. Remove Particle    (-lah, -kah, -tah, -pun, -se-nya)
-  ├─ 3. Remove Possessive  (-ku, -mu, -nya)
-  ├─ 4. Remove Suffix + Prefix  (-kan/-an/-i + me-/pe-/ber-/ter-...)
-  ├─ 5. Remove Confix      (ke-an, per-an, ber-an simultaneously)
-  ├─ 6. Prefix-only (Longest Root preference on original word)
-  └─ 7. Pengembalian Akhir (backtracking over suffix combinations)
+  ├─ 0. Lowercase + hyphen-clitic strip  (kuasa-Mu → kuasa)
+  ├─ 1. Dictionary lookup                → return if found
+  ├─ 2. Remove Particle                  (-lah, -kah, -tah, -pun)
+  ├─ 3. Remove Possessive                (-ku, -mu, -nya)
+  ├─ 4. Remove Suffix + Prefix           (-kan/-an/-i + me-/pe-/ber-/ter-…)
+  ├─ 5. ECS Confix                       (ke-an, per-an, ber-an simultaneously)
+  ├─ 6. Prefix-only                      (Longest Root preference on original word)
+  └─ 7. Pengembalian Akhir               (backtracking over suffix combinations)
 ```
 
 ### Longest-Root / Conservative Stemming
 
 When multiple valid roots exist, we always prefer the **longest** (least-stemmed) result.
-Example: `bersekolah` could produce `seko` (via ber-+seko) or `sekolah` (via ber-).
-We prefer `sekolah` — fewer morphemes removed = better fidelity.
+
+```
+bersekolah → sekolah  ✓  (not seko — fewer morphemes removed = better fidelity)
+```
 
 ---
 
 ## 🆕 Extensions (2020–2026 Research)
 
-Based on recent Indonesian NLP research (ECS, IndoMorph, Aksara), we added:
+Based on recent Indonesian NLP research (ECS, IndoMorph, Aksara v1.5), we added:
 
 ### A. `nge-` Informal Prefix
 
-Colloquial/lisan prefix, mirror of `menge-`. Common in Jakarta informal speech and social media.
+Colloquial prefix, mirror of `menge-`. Common in Jakarta informal speech and social media.
 
 ```
-ngecat     → cat
-ngegas     → gas
-ngerasain  → rasa
-ngelamar   → lamar
+ngecat    → cat
+ngegas    → gas
+ngelamar  → lamar
+ngelepas  → lepas
 ```
 
-### B. Confixes (ECS — Enhanced Confix Stripping)
+### B. Confixes — ECS (Enhanced Confix Stripping)
 
-Simultaneous prefix+suffix removal, proven to outperform plain Nazief-Adriani.
+Simultaneous prefix+suffix removal, proven to outperform plain Nazief-Adriani in accuracy.
 
 ```
-keamanan    → aman     (ke- + -an)
-pertanian   → tani     (per- + -an)
-berhadapan  → hadap    (ber- + -an)
+keamanan    → aman    (ke-…-an)
+pertanian   → tani    (per-…-an)
+berhadapan  → hadap   (ber-…-an)
 ```
 
 ### C. Superlative `se-nya` Particle
 
 ```
 selengkapnya  → lengkap
-seberhasilnya → berhasil → hasil
+seberhasilnya → hasil
 ```
 
 ### D. Loanword Suffixes
 
 ```
-idealisasi  → ideal   (-isasi)
-legalisir   → legal   (-isir)
-idealisme   → ideal   (-isme) [already in original]
-idealis     → ideal   (-is)   [already in original]
+idealisasi → ideal   (-isasi)
+legalisir  → legal   (-isir)
+idealisme  → ideal   (-isme)
+idealis    → ideal   (-is)
 ```
 
 ---
 
 ## 📊 Performance
 
-The zero-regex FST engine is significantly faster than the legacy implementation:
-
 | Operation         | Old (regex)              | New (zero-regex FST)           |
 | ----------------- | ------------------------ | ------------------------------ |
-| Dictionary lookup | O(n) HashMap             | O(k) FST where k=key length    |
+| Dictionary lookup | O(n) HashMap             | O(k) FST where k = key length  |
 | Prefix stripping  | Regex compile + match    | Direct string slice comparison |
-| Memory            | Regex DFA state machines | Minimal — FST bytes + OnceLock |
+| Memory            | Regex DFA state machines | FST bytes + OnceLock           |
 
 ---
 
@@ -186,8 +236,17 @@ The zero-regex FST engine is significantly faster than the legacy implementation
 
 ```bash
 cargo test --release
-# 2 integration test suites, 170+ word cases
+# 6 test suites, 200+ word cases
 ```
+
+| Suite | Coverage |
+|---|---|
+| `test_stem_word` | 160+ Nazief-Adriani morphological cases |
+| `test_stem_sentence` | Full sentence pipeline |
+| `test_nge_informal_prefix` | `ngecat`, `ngegas`, `ngelepas` |
+| `test_ecs_confixes` | `keamanan`, `pertanian`, `berhadapan` |
+| `test_loanword_suffixes` | `-isasi`, `-isir`, `-isme`, `-is` |
+| `test_stopword_filter` | `stem_sentence_filtered`, `is_stopword` |
 
 ---
 

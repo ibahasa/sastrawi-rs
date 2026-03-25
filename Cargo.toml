@@ -1,11 +1,21 @@
 [package]
-name = "sastrawi"
-version = "0.2.0"
+name = "sastrawi-rs"
+version = "0.3.0"
 edition = "2024"
-authors = ["ibahasa Team"]
+authors = ["ibahasa Team <halo@ibahasa.com>"]
 license = "MIT"
 repository = "https://github.com/ibahasa/sastrawi-rs"
-description = "Modern Indonesian Stemmer (Sastrawi-rs). Reviving Indonesian NLP in Rust with memory-efficient structures and full PUEBI compatibility."
+homepage = "https://ibahasa.com"
+documentation = "https://docs.rs/sastrawi-rs"
+readme = "README.md"
+description = "High-performance Indonesian stemmer (Nazief-Adriani + ECS). Zero-regex, FST-powered, Rust 2024."
+keywords = ["indonesian", "stemmer", "nlp", "bahasa", "sastrawi"]
+categories = ["text-processing", "algorithms", "science"]
+exclude = [
+    "apps/",
+    "extract_words.rs",
+    ".github/",
+]
 
 [lib]
 name = "sastrawi"
@@ -13,10 +23,7 @@ path = "src/lib.rs"
 
 [dependencies]
 fst = "0.4"
-bincode = "1.3"
 once_cell = "1.18"
-serde = { version = "1.0", features = ["derive"] }
-regex = "1"
 
 [build-dependencies]
 fst = "0.4"
