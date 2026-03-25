@@ -1,32 +1,38 @@
 use std::env;
 use std::fs::File;
-use std::io::{BufRead, BufReader, BufWriter};
+use std::io::{BufRead, BufReader};
 use std::path::Path;
+use fst::SetBuilder;
 
 fn main() {
-    let out_dir = env::var_os("OUT_DIR").unwrap();
+    let out_dir = env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("dictionary.fst");
-    let stopwords_path = Path::new(&out_dir).join("stopwords.fst");
-
-    build_fst("data/words.txt", &dest_path);
-    build_fst("data/stopwords.txt", &stopwords_path);
-
-    println!("cargo:rerun-if-changed=data/words.txt");
-    println!("cargo:rerun-if-changed=data/stopwords.txt");
-    println!("cargo:rerun-if-changed=build.rs");
-}
-
-fn build_fst(src: &str, dest: &Path) {
-    let file = File::open(src).expect("could not open source words file");
+    let wtr = File::create(dest_path).unwrap();
+    let mut builder = SetBuilder::new(wtr).unwrap();
+    
+    let file = File::open("data/words.txt").unwrap();
     let reader = BufReader::new(file);
-    let mut words: Vec<String> = reader.lines().map(|l| l.unwrap()).collect();
+    
+    let mut words: Vec<String> = reader.lines().map(|l| l.unwrap().to_lowercase()).collect();
     words.sort();
     words.dedup();
-
-    let dest_file = File::create(dest).expect("could not create fst file");
-    let mut build = fst::SetBuilder::new(BufWriter::new(dest_file)).unwrap();
+    
     for word in words {
-        build.insert(word).unwrap();
+        builder.insert(word).unwrap();
     }
-    build.finish().unwrap();
+    builder.finish().unwrap();
+
+    // stopwords
+    let dest_path_stop = Path::new(&out_dir).join("stopwords.fst");
+    let wtr_stop = File::create(dest_path_stop).unwrap();
+    let mut builder_stop = SetBuilder::new(wtr_stop).unwrap();
+    let file_stop = File::open("data/stopwords.txt").unwrap();
+    let reader_stop = BufReader::new(file_stop);
+    let mut words_stop: Vec<String> = reader_stop.lines().map(|l| l.unwrap().to_lowercase()).collect();
+    words_stop.sort();
+    words_stop.dedup();
+    for word in words_stop {
+        builder_stop.insert(word).unwrap();
+    }
+    builder_stop.finish().unwrap();
 }

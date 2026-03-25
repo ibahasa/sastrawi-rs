@@ -96,39 +96,31 @@ impl<'a> Affixation<'a> {
         }
 
         let prefix: String = word[..2].to_string();
-        let mut result_word: Cow<str> = Cow::Borrowed(word);
-        let mut recoding: Vec<String> = vec![];
-        
-        match prefix.as_str() {
+        let (result_word, recoding) = match prefix.as_str() {
             "di" | "ke" | "se" | "ku" => {
-                result_word = Cow::Borrowed(&word[2..]);
+                (Cow::Borrowed(&word[2..]), vec![])
             },
             "me" => {
                 let res = affix_rules::remove_prefix_me(word);
-                result_word = res.0;
-                recoding = res.1;
+                (res.0, res.1)
             },
             "pe" => {
                 let res = affix_rules::remove_prefix_pe(word);
-                result_word = res.0;
-                recoding = res.1;
+                (res.0, res.1)
             },
             "be" => {
                 let res = affix_rules::remove_prefix_be(word);
-                result_word = res.0;
-                recoding = res.1;
+                (res.0, res.1)
             },
             "te" => {
                 let res = affix_rules::remove_prefix_te(word);
-                result_word = res.0;
-                recoding = res.1;
+                (res.0, res.1)
             },
             _ => {
                 let res = affix_rules::remove_infix(word);
-                result_word = res.0;
-                recoding = res.1;
+                (res.0, res.1)
             }
-        }
+        };
 
         (prefix, result_word.into_owned(), recoding)
     }

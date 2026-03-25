@@ -44,7 +44,9 @@ impl Dictionary {
     }
 
     pub fn find(&self, word: &str) -> bool {
-        self.set.contains(word.to_lowercase())
+        let word_lower = word.to_lowercase();
+        let found = self.set.contains(&word_lower);
+        found
     }
 
     pub fn length(&self) -> usize {

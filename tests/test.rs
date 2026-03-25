@@ -187,9 +187,8 @@ fn test_stem_word() {
     let dict = Dictionary::custom(words);
     let stemmer = Stemmer::new(&dict);
     for (value, expected) in _test_items.iter() {
-		let mut actual = value.to_string();
-		stemmer.stem_word(&mut actual);
-        assert_eq!(actual, expected.to_string());
+		let actual = stemmer.stem_word(value);
+        assert_eq!(actual.as_ref(), *expected, "Stemming failed for word: {}", value);
     }
 }
 
@@ -206,9 +205,9 @@ fn test_stem_sentence() {
 	];
 	let dict = Dictionary::new();
     let stemmer = Stemmer::new(&dict);
-    let sentence = String::from("Perekonomian Indonesia sedang dalam pertumbuhan yang membanggakan");
-    let stemmed_words = stemmer.stem_sentence(&sentence);
-    for (index, actual) in stemmed_words.iter().enumerate() {
-        assert_eq!(actual.as_str(), expected[index]);
+    let sentence = "Perekonomian Indonesia sedang dalam pertumbuhan yang membanggakan";
+    let stemmed_iterator = stemmer.stem_sentence(sentence);
+    for (index, actual) in stemmed_iterator.enumerate() {
+        assert_eq!(actual.as_ref(), expected[index]);
     }
 }
