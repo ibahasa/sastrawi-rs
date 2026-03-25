@@ -1,0 +1,809 @@
+	a
+	akhiri
+	antaranya
+	asalkan
+	bagaimana
+	bahwasannya
+	baru
+	begitulah
+	benarkah
+	berapalah
+	berikut
+	berkenaan
+	bermaksud
+	bertanya-tanya
+	betul
+	bolehlah
+	caranya
+	daripada
+	diakhiri
+	dibuat
+	diingat
+	dikatakan
+	dilalui
+	dimintai
+	diperbuat
+	diperlukannya
+	disebut
+	ditanya
+	ditunjukkannya
+	diungkapkan
+	f
+	hari
+	i
+	inginkah
+	jadinya
+	jelaskan
+	k
+	kamulah
+	katakanlah
+	kelamaan
+	kemungkinannya
+	keseluruhannya
+	kira-kira
+	lainnya
+	lihat
+	mampu
+	masihkah
+	melalui
+	memerlukan
+	memperkirakan
+	memulai
+	menantikan
+	mendatangkan
+	mengerjakan
+	mengingat
+	menjadi
+	menurut
+	menyiapkan
+	minta
+	mungkinkah
+	o
+	para
+	pernah
+	pukul
+	sajalah
+	sangat
+	sebagaimana
+	sebanyak
+	sebetulnya
+	sedangkan
+	seharusnya
+	sekali
+	seketika
+	selaku
+	semacam
+	sementara
+	sendirinya
+	seperlunya
+	sesama
+	sesudahnya
+	setidak-tidaknya
+	siapapun
+	t
+	tanpa
+	tentulah
+	terhadap
+	terlalu
+	tertentu
+	tidakkah
+	ujar
+	waktunya
+ada
+adalah
+adanya
+adapun
+agak
+agaknya
+agar
+akan
+akankah
+akhir
+akhirnya
+aku
+akulah
+amat
+amatlah
+anda
+andalah
+antar
+antara
+apa
+apaan
+apabila
+apakah
+apalagi
+apatah
+arti
+artinya
+asal
+atas
+atau
+ataukah
+ataupun
+awal
+awalnya
+b
+bagai
+bagaikan
+bagaimanakah
+bagaimanapun
+bagainamakah
+bagi
+bagian
+bahkan
+bahwa
+bahwasanya
+baik
+baiklah
+bakal
+bakalan
+balik
+banyak
+bapak
+bawah
+beberapa
+begini
+beginian
+beginikah
+beginilah
+begitu
+begitukah
+begitupun
+bekerja
+belakang
+belakangan
+belum
+belumlah
+benar
+benarlah
+berada
+berakhir
+berakhirlah
+berakhirnya
+berapa
+berapakah
+berapapun
+berarti
+berawal
+berbagai
+berdatangan
+beri
+berikan
+berikutnya
+berjumlah
+berkali-kali
+berkata
+berkehendak
+berkeinginan
+berlainan
+berlalu
+berlangsung
+berlebihan
+bermacam
+bermacam-macam
+bermula
+bersama
+bersama-sama
+bersiap
+bersiap-siap
+bertanya
+berturut
+berturut-turut
+bertutur
+berujar
+berupa
+besar
+betulkah
+biasa
+biasanya
+bila
+bilakah
+bisa
+bisakah
+boleh
+bolehkah
+buat
+bukan
+bukankah
+bukanlah
+bukannya
+bulan
+bung
+c
+cara
+cukup
+cukupkah
+cukuplah
+cuma
+d
+dahulu
+dalam
+dan
+dapat
+dari
+datang
+dekat
+demi
+demikian
+demikianlah
+dengan
+depan
+di
+dia
+diakhirinya
+dialah
+diantara
+diantaranya
+diberi
+diberikan
+diberikannya
+dibuatnya
+didapat
+didatangkan
+digunakan
+diibaratkan
+diibaratkannya
+diingatkan
+diinginkan
+dijawab
+dijelaskan
+dijelaskannya
+dikarenakan
+dikatakannya
+dikerjakan
+diketahui
+diketahuinya
+dikira
+dilakukan
+dilihat
+dimaksud
+dimaksudkan
+dimaksudkannya
+dimaksudnya
+diminta
+dimisalkan
+dimulai
+dimulailah
+dimulainya
+dimungkinkan
+dini
+dipastikan
+diperbuatnya
+dipergunakan
+diperkirakan
+diperlihatkan
+diperlukan
+dipersoalkan
+dipertanyakan
+dipunyai
+diri
+dirinya
+disampaikan
+disebutkan
+disebutkannya
+disini
+disinilah
+ditambahkan
+ditandaskan
+ditanyai
+ditanyakan
+ditegaskan
+ditujukan
+ditunjuk
+ditunjuki
+ditunjukkan
+ditunjuknya
+dituturkan
+dituturkannya
+diucapkan
+diucapkannya
+dong
+dua
+dulu
+e
+empat
+enak
+enggak
+enggaknya
+entah
+entahlah
+g
+guna
+gunakan
+h
+hadap
+hai
+hal
+hallo
+halo
+hampir
+hanya
+hanyalah
+harus
+haruslah
+harusnya
+hello
+helo
+hendak
+hendaklah
+hendaknya
+hingga
+ia
+ialah
+ibarat
+ibaratkan
+ibaratnya
+ibu
+ikut
+ingat
+ingat-ingat
+ingin
+inginkan
+ini
+inikah
+inilah
+itu
+itukah
+itulah
+j
+jadi
+jadilah
+jangan
+jangankan
+janganlah
+jauh
+jawab
+jawaban
+jawabnya
+jelas
+jelaslah
+jelasnya
+jika
+jikalau
+juga
+jumlah
+jumlahnya
+justru
+kadar
+kala
+kalau
+kalaulah
+kalaupun
+kali
+kalian
+kami
+kamilah
+kamu
+kan
+kapan
+kapankah
+kapanpun
+karena
+karenanya
+kasus
+kata
+katakan
+katanya
+ke
+keadaan
+kebetulan
+kecil
+kedua
+keduanya
+keinginan
+kelihatan
+kelihatannya
+kelima
+keluar
+kembali
+kemudian
+kemungkinan
+kena
+kenapa
+kepada
+kepadanya
+kerja
+kesampaian
+keseluruhan
+keterlaluan
+ketika
+khusus
+khususnya
+kini
+kinilah
+kira
+kiranya
+kita
+kitalah
+kok
+kurang
+l
+lagi
+lagian
+lah
+lain
+laku
+lalu
+lama
+lamanya
+langsung
+lanjut
+lanjutnya
+lebih
+lewat
+lima
+luar
+m
+macam
+maka
+makanya
+makin
+maksud
+malah
+malahan
+mampukah
+mana
+manakala
+manalagi
+masa
+masalah
+masalahnya
+masih
+masing
+masing-masing
+masuk
+mata
+mau
+maupun
+melainkan
+melakukan
+melihat
+melihatnya
+memang
+memastikan
+memberi
+memberikan
+membuat
+memihak
+meminta
+memintakan
+memisalkan
+memperbuat
+mempergunakan
+memperlihatkan
+mempersiapkan
+mempersoalkan
+mempertanyakan
+mempunyai
+memungkinkan
+menaiki
+menambahkan
+menandaskan
+menanti
+menanti-nanti
+menanya
+menanyai
+menanyakan
+mendapat
+mendapatkan
+mendatang
+mendatangi
+menegaskan
+mengakhiri
+mengapa
+mengatakan
+mengatakannya
+mengenai
+mengetahui
+menggunakan
+menghendaki
+mengibaratkan
+mengibaratkannya
+mengingatkan
+menginginkan
+mengira
+mengucapkan
+mengucapkannya
+mengungkapkan
+menjawab
+menjelaskan
+menuju
+menunjuk
+menunjuki
+menunjukkan
+menunjuknya
+menuturkan
+menyampaikan
+menyangkut
+menyatakan
+menyebutkan
+menyeluruh
+merasa
+mereka
+merekalah
+merupakan
+meski
+meskipun
+meyakini
+meyakinkan
+mirip
+misal
+misalkan
+misalnya
+mohon
+mula
+mulai
+mulailah
+mulanya
+mungkin
+n
+nah
+naik
+namun
+nanti
+nantinya
+nya
+nyaris
+nyata
+nyatanya
+oleh
+olehnya
+orang
+p
+pada
+padahal
+padanya
+pak
+paling
+panjang
+pantas
+pasti
+pastilah
+penting
+pentingnya
+per
+percuma
+perlu
+perlukah
+perlunya
+persoalan
+pertama
+pertama-tama
+pertanyaan
+pertanyakan
+pihak
+pihaknya
+pula
+pun
+punya
+q
+r
+rasa
+rasanya
+rupa
+rupanya
+s
+saat
+saatnya
+saja
+salam
+saling
+sama
+sama-sama
+sambil
+sampai
+sampai-sampai
+sampaikan
+sana
+sangatlah
+sangkut
+satu
+saya
+sayalah
+se
+sebab
+sebabnya
+sebagai
+sebagainya
+sebagian
+sebaik
+sebaik-baiknya
+sebaiknya
+sebaliknya
+sebegini
+sebegitu
+sebelum
+sebelumnya
+sebenarnya
+seberapa
+sebesar
+sebisanya
+sebuah
+sebut
+sebutlah
+sebutnya
+secara
+secukupnya
+sedang
+sedemikian
+sedikit
+sedikitnya
+seenaknya
+segala
+segalanya
+segera
+sehingga
+seingat
+sejak
+sejauh
+sejenak
+sejumlah
+sekadar
+sekadarnya
+sekali-kali
+sekalian
+sekaligus
+sekalipun
+sekarang
+sekaranglah
+sekecil
+sekiranya
+sekitar
+sekitarnya
+sekurang-kurangnya
+sekurangnya
+sela
+selain
+selalu
+selama
+selama-lamanya
+selamanya
+selanjutnya
+seluruh
+seluruhnya
+semakin
+semampu
+semampunya
+semasa
+semasih
+semata
+semata-mata
+semaunya
+semisal
+semisalnya
+sempat
+semua
+semuanya
+semula
+sendiri
+sendirian
+seolah
+seolah-olah
+seorang
+sepanjang
+sepantasnya
+sepantasnyalah
+seperti
+sepertinya
+sepihak
+sering
+seringnya
+serta
+serupa
+sesaat
+sesampai
+sesegera
+sesekali
+seseorang
+sesuatu
+sesuatunya
+sesudah
+setelah
+setempat
+setengah
+seterusnya
+setiap
+setiba
+setibanya
+setidaknya
+setinggi
+seusai
+sewaktu
+siap
+siapa
+siapakah
+sini
+sinilah
+soal
+soalnya
+suatu
+sudah
+sudahkah
+sudahlah
+supaya
+tadi
+tadinya
+tahu
+tak
+tambah
+tambahnya
+tampak
+tampaknya
+tandas
+tandasnya
+tanya
+tanyakan
+tanyanya
+tapi
+tegas
+tegasnya
+telah
+tempat
+tentang
+tentu
+tentunya
+tepat
+terakhir
+terasa
+terbanyak
+terdahulu
+terdapat
+terdiri
+terhadapnya
+teringat
+teringat-ingat
+terjadi
+terjadilah
+terjadinya
+terkira
+terlebih
+terlihat
+termasuk
+ternyata
+tersampaikan
+tersebut
+tersebutlah
+tertuju
+terus
+terutama
+tetap
+tetapi
+tiap
+tiba
+tiba-tiba
+tidak
+tidaklah
+tiga
+toh
+tuju
+tunjuk
+turut
+tutur
+tuturnya
+u
+ucap
+ucapnya
+ujarnya
+umumnya
+ungkap
+ungkapnya
+untuk
+usah
+usai
+v
+w
+waduh
+wah
+wahai
+walau
+walaupun
+wong
+x
+y
+ya
+yaitu
+yakin
+yakni
+yang
+z
