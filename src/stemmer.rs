@@ -5,6 +5,7 @@ use std::borrow::Cow;
 
 pub struct Stemmer<'a> {
     dictionary: &'a Dictionary,
+    stopwords: Dictionary,
     tokenizer: Tokenizer,
     affixation: Affixation<'a>,
 }
@@ -15,13 +16,37 @@ impl<'a> Stemmer<'a> {
         let affixation = Affixation::new(dictionary);
         Stemmer {
             dictionary,
+            stopwords: Dictionary::stopword(),
             tokenizer,
             affixation,
         }
     }
 
+    /// Stem all tokens in a sentence. Stopwords are included in the output.
     pub fn stem_sentence<'b>(&'b self, sentence: &'b str) -> impl Iterator<Item = Cow<'b, str>> + 'b {
         self.tokenizer.tokenize(sentence).map(move |word| self.stem_word(word))
+    }
+
+    /// Stem all tokens in a sentence, **skipping stopwords** (yang, di, dengan, …).
+    /// Useful for search indexing and NLP analysis where common function words add noise.
+    ///
+    /// # Example
+    /// ```
+    /// let dict = sastrawi::Dictionary::new();
+    /// let stemmer = sastrawi::Stemmer::new(&dict);
+    /// let tokens: Vec<_> = stemmer.stem_sentence_filtered("Perekonomian sedang dalam pertumbuhan").collect();
+    /// // → ["ekonomi", "tumbuh"]  — "sedang" and "dalam" are filtered out
+    /// ```
+    pub fn stem_sentence_filtered<'b>(&'b self, sentence: &'b str) -> impl Iterator<Item = Cow<'b, str>> + 'b {
+        self.tokenizer
+            .tokenize(sentence)
+            .filter(move |word| !self.stopwords.find(word))
+            .map(move |word| self.stem_word(word))
+    }
+
+    /// Check whether a word is a stopword.
+    pub fn is_stopword(&self, word: &str) -> bool {
+        self.stopwords.find(word)
     }
 
     pub fn stem_word<'b>(&self, word: &'b str) -> Cow<'b, str> {

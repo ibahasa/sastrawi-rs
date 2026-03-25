@@ -311,3 +311,40 @@ fn test_loanword_suffixes() {
         assert_eq!(actual.as_ref(), *expected, "loanword suffix failed for: {}", value);
     }
 }
+
+// ---------------------------------------------------------------------------
+// Test: Stopword Filter — stem_sentence_filtered & is_stopword
+// Common function words (yang, di, dari, pada, dalam, …) should be skipped
+// when building a search index or running NLP analysis.
+// ---------------------------------------------------------------------------
+#[test]
+fn test_stopword_filter() {
+    let dict = Dictionary::new();
+    let stemmer = Stemmer::new(&dict);
+
+    // is_stopword: spot-check common Indonesian stopwords
+    assert!(stemmer.is_stopword("yang"),   "expected 'yang' to be a stopword");
+    assert!(stemmer.is_stopword("di"),     "expected 'di' to be a stopword");
+    assert!(stemmer.is_stopword("dari"),   "expected 'dari' to be a stopword");
+    assert!(stemmer.is_stopword("dalam"),  "expected 'dalam' to be a stopword");
+    assert!(stemmer.is_stopword("dengan"), "expected 'dengan' to be a stopword");
+    assert!(!stemmer.is_stopword("ekonomi"), "'ekonomi' should NOT be a stopword");
+    assert!(!stemmer.is_stopword("tumbuh"),  "'tumbuh' should NOT be a stopword");
+
+    // stem_sentence_filtered: stopwords excluded, content words stemmed
+    let sentence = "Perekonomian Indonesia sedang dalam pertumbuhan yang membanggakan";
+    let filtered: Vec<String> = stemmer
+        .stem_sentence_filtered(sentence)
+        .map(|w| w.into_owned())
+        .collect();
+
+    // "sedang", "dalam", "yang" must not appear
+    assert!(!filtered.contains(&"sedang".to_string()),  "stopword 'sedang' leaked through");
+    assert!(!filtered.contains(&"dalam".to_string()),   "stopword 'dalam' leaked through");
+    assert!(!filtered.contains(&"yang".to_string()),    "stopword 'yang' leaked through");
+
+    // content words must be stemmed and present
+    assert!(filtered.contains(&"ekonomi".to_string()),  "expected 'ekonomi' in output");
+    assert!(filtered.contains(&"tumbuh".to_string()),   "expected 'tumbuh' in output");
+    assert!(filtered.contains(&"bangga".to_string()),   "expected 'bangga' in output");
+}
