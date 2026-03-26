@@ -20,7 +20,7 @@ Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-sastrawi-rs = "0.4"
+sastrawi-rs = "0.5"
 ```
 
 This crate provides **two independent stemmers** that share the same zero-copy, FST-based architecture:
@@ -139,6 +139,109 @@ stemmer.stem_sentence_filtered(sent)  // → Iterator with stopwords removed
 stemmer.is_stopword(word)             // → bool
 ```
 
+---
+
+## 🔬 MorphAnalyzer — Dictionary-Free Morphological Analyzer
+
+`MorphAnalyzer` is a **zero-dependency, no-dictionary** morphological analyzer for Indonesian. It detects affix patterns and returns candidate roots **without validating** them against any dictionary.
+
+> **Honest caveat:** Because there is no dictionary, `MorphAnalyzer` cannot resolve all morphophonemic mutations (e.g. `men-` + `tulis` = `menulis`, but stripping `men-` yields `ulis` not `tulis` without knowing the root starts with `t`). It is accurate for **affix detection** and **candidate generation**, but not as a standalone stemmer.
+
+### When to use `MorphAnalyzer` vs `Stemmer`
+
+| Need | Use |
+|---|---|
+| Single validated root from a word | `Stemmer` (requires dictionary) |
+| Does this word have any affix? | `MorphAnalyzer` |
+| What prefix/suffix does this word have? | `MorphAnalyzer` |
+| Generate candidate roots for autocomplete or admin UI | `MorphAnalyzer` |
+| Validate that a game submission is morphologically plausible | `MorphAnalyzer` |
+| ML feature: prefix/suffix signals | `MorphAnalyzer` |
+
+### Usage
+
+```rust,ignore
+use sastrawi::{MorphAnalyzer, MorphAnalysis};
+
+let ma = MorphAnalyzer::new(); // Zero allocation — no dictionary loaded
+
+// --- Affix detection ---
+let r = ma.analyze("membangunkan");
+assert!(r.has_affix);
+assert_eq!(r.prefix.as_deref(), Some("me"));
+assert_eq!(r.suffix.as_deref(), Some("kan"));
+// candidate_roots may contain ["mbangun"] — final resolution needs Stemmer+dictionary
+
+// --- Plain word (no affix) ---
+let r = ma.analyze("buku");
+assert!(!r.has_affix);
+assert!(r.candidate_roots.is_empty());
+
+// --- Confix (ke-an, per-an, ber-an) ---
+let r = ma.analyze("keamanan");
+assert_eq!(r.prefix.as_deref(), Some("ke"));
+assert_eq!(r.suffix.as_deref(), Some("an"));
+assert!(r.candidate_roots.contains(&"aman".to_string()));
+
+// --- nge- informal prefix ---
+let r = ma.analyze("ngecat");
+assert_eq!(r.prefix.as_deref(), Some("nge"));
+assert!(r.candidate_roots.contains(&"cat".to_string()));
+
+// --- Possessive suffix ---
+let r = ma.analyze("rumahnya");
+assert_eq!(r.suffix.as_deref(), Some("nya"));
+assert!(r.candidate_roots.contains(&"rumah".to_string()));
+
+// --- Hyphen-clitic stripped before analysis ---
+let r = ma.analyze("kuasa-Mu");
+assert_eq!(r.word, "kuasa"); // clitic segment after hyphen is dropped
+```
+
+### `MorphAnalysis` struct
+
+```rust,ignore
+pub struct MorphAnalysis {
+    pub word: String,                  // normalized (lowercased, hyphen-stripped) input
+    pub prefix: Option<String>,        // detected prefix ("me", "ber", "nge", "ke", …)
+    pub suffix: Option<String>,        // detected suffix ("kan", "an", "lah", "ku", …)
+    pub candidate_roots: Vec<String>,  // plausible roots (may be ambiguous — see caveats)
+    pub has_affix: bool,               // true if prefix OR suffix detected
+}
+```
+
+### Detection pipeline (priority order)
+
+```text
+Input
+  │
+  ├─ 0. Lowercase + hyphen-clitic strip
+  ├─ 1. Guard: word < 4 chars → return as-is (no analysis)
+  ├─ 2. CONFIX (ke-an, per-an, ber-an, me-kan)  ← highest precision, both sides locked
+  ├─ 3. PREFIX (me-/ber-/ter-/pe-/nge-/di-/se-/ke-/ku-/kau-)
+  ├─ 4. PARTICLE (-lah, -kah, -tah, -pun), then prefix on remainder
+  ├─ 5. POSSESSIVE (-ku, -mu, -nya), then prefix on remainder
+  └─ 6. DERIVATIONAL SUFFIX (-kan, -an, -isme, -isasi, -isir)
+         Guard: skipped if result < 3 chars, or -i suffix on short words
+```
+
+### Known limitations (by design)
+
+| Limitation | Reason | Workaround |
+|---|---|---|
+| `menulis` → root `ulis`, not `tulis` | `men-` drops nasal; `t` restoration needs dict | Use `Stemmer` for final root |
+| `mengirim` → root `irim`, not `kirim` | `meng-` drops `k` which needs dict to restore | Use `Stemmer` for final root |
+| Ambiguous: `mengada` → `["ada", "ngada"]` | Both morphologically valid without dict | Check candidates against dict |
+| `-is` / `-i` suffix not stripped aggressively | Avoids false positives on short words | Intentional guard |
+
+### MorphAnalyzer API
+
+```rust,ignore
+let ma = MorphAnalyzer::new();    // or MorphAnalyzer::default()
+let r: MorphAnalysis = ma.analyze(word);  // works on any &str
+```
+
+---
 ### Indonesian Stemming Pipeline (Nazief-Adriani + ECS)
 
 ```text
