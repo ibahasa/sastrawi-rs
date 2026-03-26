@@ -1,5 +1,5 @@
-use crate::dictionary::Dictionary;
 use crate::affix_rules;
+use crate::dictionary::Dictionary;
 use std::borrow::Cow;
 
 pub struct Affixation<'a> {
@@ -8,9 +8,7 @@ pub struct Affixation<'a> {
 
 impl<'a> Affixation<'a> {
     pub fn new(dict: &Dictionary) -> Affixation<'_> {
-        Affixation {
-            dictionary: dict,
-        }
+        Affixation { dictionary: dict }
     }
 
     /// Try to remove up to 3 prefix layers, returning the first root found in the dictionary.
@@ -116,9 +114,7 @@ impl<'a> Affixation<'a> {
 
         let prefix: String = word[..2].to_string();
         let (result_word, recoding) = match prefix.as_str() {
-            "di" | "ke" | "se" | "ku" => {
-                (Cow::Borrowed(&word[2..]), vec![])
-            }
+            "di" | "ke" | "se" | "ku" => (Cow::Borrowed(&word[2..]), vec![]),
             "me" => {
                 let res = affix_rules::remove_prefix_me(word);
                 (res.0, res.1)

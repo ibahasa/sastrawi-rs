@@ -23,7 +23,8 @@ impl Tokenizer {
     /// assert_eq!(tokens, vec!["Saya", "Makan", "Nasi"]);
     /// ```
     pub fn tokenize<'a>(&self, sentence: &'a str) -> impl Iterator<Item = &'a str> {
-        sentence.split(|c: char| c.is_whitespace() || c.is_ascii_punctuation())
-                .filter(|s| !s.is_empty())
+        sentence
+            .split(|c: char| c.is_whitespace() || c.is_ascii_punctuation())
+            .filter(|s| !s.is_empty())
     }
 }

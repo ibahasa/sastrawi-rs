@@ -1,6 +1,6 @@
+use crate::affixation::Affixation;
 use crate::dictionary::Dictionary;
 use crate::tokenizer::Tokenizer;
-use crate::affixation::Affixation;
 use std::borrow::Cow;
 
 /// The main Indonesian word stemmer.
@@ -65,8 +65,13 @@ impl<'a> Stemmer<'a> {
     /// let stemmed: Vec<_> = stemmer.stem_sentence(sentence).collect();
     /// // → ["dia", "sedang", "makan", "nasi"]
     /// ```
-    pub fn stem_sentence<'b>(&'b self, sentence: &'b str) -> impl Iterator<Item = Cow<'b, str>> + 'b {
-        self.tokenizer.tokenize(sentence).map(move |word| self.stem_word(word))
+    pub fn stem_sentence<'b>(
+        &'b self,
+        sentence: &'b str,
+    ) -> impl Iterator<Item = Cow<'b, str>> + 'b {
+        self.tokenizer
+            .tokenize(sentence)
+            .map(move |word| self.stem_word(word))
     }
 
     /// Stems all tokens in a sentence, skipping common Indonesian stopwords.
@@ -86,7 +91,10 @@ impl<'a> Stemmer<'a> {
     /// let filtered: Vec<_> = stemmer.stem_sentence_filtered(sentence).collect();
     /// // → ["tumbuh", "bangga"]  — "yang" is skipped
     /// ```
-    pub fn stem_sentence_filtered<'b>(&'b self, sentence: &'b str) -> impl Iterator<Item = Cow<'b, str>> + 'b {
+    pub fn stem_sentence_filtered<'b>(
+        &'b self,
+        sentence: &'b str,
+    ) -> impl Iterator<Item = Cow<'b, str>> + 'b {
         self.tokenizer
             .tokenize(sentence)
             .filter(move |word| !self.stopwords.find(word))
@@ -161,7 +169,11 @@ impl<'a> Stemmer<'a> {
         // --- Step 1: Remove Particle ---
         let pres = {
             let (p, r) = self.affixation.remove_particle(&current);
-            if p.is_empty() { None } else { Some((p.into_owned(), r.into_owned())) }
+            if p.is_empty() {
+                None
+            } else {
+                Some((p.into_owned(), r.into_owned()))
+            }
         };
         if let Some((p, after)) = pres {
             particle = p;
@@ -174,7 +186,11 @@ impl<'a> Stemmer<'a> {
         // --- Step 2: Remove Possessive ---
         let posres = {
             let (p, r) = self.affixation.remove_possessive(&current);
-            if p.is_empty() { None } else { Some((p.into_owned(), r.into_owned())) }
+            if p.is_empty() {
+                None
+            } else {
+                Some((p.into_owned(), r.into_owned()))
+            }
         };
         if let Some((pos, after)) = posres {
             possessive = pos;
@@ -187,7 +203,11 @@ impl<'a> Stemmer<'a> {
         // --- Step 3 & 4: Remove Suffix then try Prefixes ---
         let sufres = {
             let (s, r) = self.affixation.remove_suffix(&current);
-            if s.is_empty() { None } else { Some((s.into_owned(), r.into_owned())) }
+            if s.is_empty() {
+                None
+            } else {
+                Some((s.into_owned(), r.into_owned()))
+            }
         };
         if let Some((s, after_suffix)) = sufres {
             suffix = s;
@@ -243,7 +263,9 @@ impl<'a> Stemmer<'a> {
             ];
         }
 
-        let (found, res_backtrack) = self.affixation.pengembalian_akhir(&original_word, &removed_suffixes);
+        let (found, res_backtrack) = self
+            .affixation
+            .pengembalian_akhir(&original_word, &removed_suffixes);
         if found {
             return Cow::Owned(res_backtrack);
         }

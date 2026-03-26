@@ -14,7 +14,7 @@ impl<'a> StopWord<'a> {
     /// Creates a new `StopWord` instance with the provided stopword dictionary.
     pub fn new(dictionary: &Dictionary) -> StopWord<'_> {
         let tokenizer = Tokenizer::new();
-        StopWord{
+        StopWord {
             dictionary: dictionary,
             tokenizer: tokenizer,
         }

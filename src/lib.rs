@@ -5,9 +5,11 @@ pub use stemmer::Stemmer;
 pub use stopword::StopWord;
 pub use tokenizer::Tokenizer;
 
+pub mod javanese;
+
+mod affix_rules;
+mod affixation;
 mod dictionary;
 mod stemmer;
-mod tokenizer;
-mod affixation;
 mod stopword;
-mod affix_rules;
+mod tokenizer;

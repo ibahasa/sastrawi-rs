@@ -1,5 +1,5 @@
-use std::sync::OnceLock;
 use fst::Set;
+use std::sync::OnceLock;
 
 /// A dictionary used for stemming and stopword lookups.
 ///
@@ -66,7 +66,7 @@ impl Dictionary {
         let mut sorted_words: Vec<String> = words.iter().map(|s| s.to_string()).collect();
         sorted_words.sort();
         sorted_words.dedup();
-        
+
         let mut build = fst::SetBuilder::memory();
         for word in sorted_words {
             build.insert(word).unwrap();
