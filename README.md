@@ -20,7 +20,7 @@ Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-sastrawi-rs = "0.5"
+sastrawi-rs = "0.5.1"
 ```
 
 This crate provides **two independent stemmers** that share the same zero-copy, FST-based architecture:
@@ -278,7 +278,7 @@ Input word
   └─ 5. Backtracking (Pengembalian Akhir) with known suffix combinations
 ```
 
-> **Note on Infixes (Seselan):** Javanese infixes `-um-`, `-in-`, `-el-`, `-er-` are intentionally **not implemented** in v0.4.0 as they require character-level mid-word insertion detection that conflicts with the zero-regex philosophy. Planned for v0.5.0 with an Aho-Corasick approach.
+> **Note on Infixes (Seselan):** Javanese infixes `-um-`, `-in-`, `-el-`, `-er-` are intentionally **not implemented** in v0.4.0 as they require character-level mid-word insertion detection that conflicts with the zero-regex philosophy. Planned for v0.6.0 with an Aho-Corasick approach.
 
 ---
 
